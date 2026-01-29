@@ -16,7 +16,14 @@ interface ChannelChartProps {
   metric: 'roas' | 'cpi' | 'breakevenDays' | 'ltv30';
 }
 
-const metricConfig = {
+interface MetricConfig {
+  label: string;
+  prefix?: string;
+  suffix?: string;
+  better: 'higher' | 'lower';
+}
+
+const metricConfig: Record<string, MetricConfig> = {
   roas: { label: 'ROAS', suffix: '%', better: 'higher' },
   cpi: { label: 'CPI', prefix: '$', better: 'lower' },
   breakevenDays: { label: '回本天数', suffix: '天', better: 'lower' },
@@ -34,9 +41,16 @@ export function ChannelChart({ data, metric }: ChannelChartProps) {
     return a[metric] - b[metric];
   });
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const formatLabel = (value: number | string): string => {
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    if (config.prefix) return `${config.prefix}${numValue}`;
+    if (config.suffix) return `${numValue}${config.suffix}`;
+    return String(numValue);
+  };
+
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: ChannelComparison }> }) => {
     if (active && payload && payload.length) {
-      const item = payload[0].payload as ChannelComparison;
+      const item = payload[0].payload;
       return (
         <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
           <p className="font-medium mb-2">{item.channelName}</p>
@@ -113,11 +127,7 @@ export function ChannelChart({ data, metric }: ChannelChartProps) {
               position="right" 
               fill="hsl(210, 40%, 96%)"
               fontSize={12}
-              formatter={(value: number) => {
-                if (config.prefix) return `${config.prefix}${value}`;
-                if (config.suffix) return `${value}${config.suffix}`;
-                return value;
-              }}
+              formatter={formatLabel}
             />
           </Bar>
         </BarChart>
