@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { Settings } from 'lucide-react';
 import { Header } from '../components/Header';
 import { SpendKPICard, InstallsKPICard, ROASKPICard, BreakevenKPICard } from '../components/KPICard';
 import { ROIChart } from '../components/ROIChart';
@@ -7,20 +8,27 @@ import { RetentionChart } from '../components/RetentionChart';
 import { PredictionSimulator } from '../components/PredictionSimulator';
 import { ModelStatus } from '../components/ModelStatus';
 import { ChannelTable } from '../components/ChannelTable';
+import { DataConfigPanel } from '../components/DataConfigPanel';
 import { 
   defaultParams, 
   generateROIPredictions, 
-  kpiMetrics, 
+  kpiMetrics as defaultKpiMetrics, 
   modelMetrics,
-  channelComparison,
-  retentionData,
+  channelComparison as defaultChannelComparison,
+  retentionData as defaultRetentionData,
 } from '../data/mockData';
-import type { PredictionParams } from '../types/analytics';
+import type { PredictionParams, KPIMetrics, ChannelComparison, RetentionData } from '../types/analytics';
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [params, setParams] = useState<PredictionParams>(defaultParams);
   const [channelMetric, setChannelMetric] = useState<'roas' | 'cpi' | 'breakevenDays' | 'ltv30'>('roas');
+  const [showConfig, setShowConfig] = useState(false);
+  
+  // 可编辑的数据状态
+  const [kpiMetrics, setKpiMetrics] = useState<KPIMetrics>(defaultKpiMetrics);
+  const [channelComparison, setChannelComparison] = useState<ChannelComparison[]>(defaultChannelComparison);
+  const [retentionData, setRetentionData] = useState<RetentionData[]>(defaultRetentionData);
   
   // 计算ROI预测
   const roiPredictions = useMemo(() => {
@@ -46,12 +54,36 @@ export default function Dashboard() {
       {/* 头部导航 */}
       <Header activeTab={activeTab} onTabChange={setActiveTab} />
       
+      {/* 数据配置面板 */}
+      {showConfig && (
+        <DataConfigPanel
+          kpiMetrics={kpiMetrics}
+          channels={channelComparison}
+          retentionData={retentionData}
+          onKPIChange={setKpiMetrics}
+          onChannelsChange={setChannelComparison}
+          onRetentionChange={setRetentionData}
+          onClose={() => setShowConfig(false)}
+        />
+      )}
+      
       {/* 主内容区 */}
       <main className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 py-6">
         
         {/* 仪表盘视图 */}
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
+            {/* 配置按钮 */}
+            <div className="flex justify-end">
+              <button 
+                onClick={() => setShowConfig(true)}
+                className="btn-secondary flex items-center gap-2"
+              >
+                <Settings className="w-4 h-4" />
+                配置数据
+              </button>
+            </div>
+            
             {/* KPI 卡片 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <SpendKPICard value={`$${kpiMetrics.totalSpend.toLocaleString()}`} change={12.5} />
@@ -143,9 +175,18 @@ export default function Dashboard() {
         {/* 模型设置视图 */}
         {activeTab === 'settings' && (
           <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-semibold">模型设置与状态</h2>
-              <p className="text-muted-foreground mt-1">查看预测模型性能指标与配置</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold">模型设置与状态</h2>
+                <p className="text-muted-foreground mt-1">查看预测模型性能指标与配置</p>
+              </div>
+              <button 
+                onClick={() => setShowConfig(true)}
+                className="btn-primary flex items-center gap-2"
+              >
+                <Settings className="w-4 h-4" />
+                配置数据
+              </button>
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
