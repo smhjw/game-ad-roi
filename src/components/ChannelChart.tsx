@@ -127,7 +127,7 @@ export function ChannelChart({ data, metric }: ChannelChartProps) {
               position="right" 
               fill="hsl(210, 40%, 96%)"
               fontSize={12}
-              formatter={formatLabel}
+              formatter={formatLabel as any}
             />
           </Bar>
         </BarChart>
