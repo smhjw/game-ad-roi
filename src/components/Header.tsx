@@ -8,16 +8,17 @@ import {
   Menu
 } from 'lucide-react';
 import { useState } from 'react';
+import type { DashboardTab } from '../types/ui';
 
 interface HeaderProps {
-  activeTab: string;
-  onTabChange: (tab: string) => void;
+  activeTab: DashboardTab;
+  onTabChange: (tab: DashboardTab) => void;
 }
 
 export function Header({ activeTab, onTabChange }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
-  const tabs = [
+  const tabs: Array<{ id: DashboardTab; label: string; icon: typeof LayoutDashboard }> = [
     { id: 'dashboard', label: '仪表盘', icon: LayoutDashboard },
     { id: 'prediction', label: 'ROI预测', icon: LineChartIcon },
     { id: 'channels', label: '渠道分析', icon: Layers },

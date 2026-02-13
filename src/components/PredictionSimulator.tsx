@@ -115,14 +115,6 @@ const sliderConfig: Array<{
     ],
   },
   {
-    section: '前期LTV锚点',
-    items: [
-      { key: 'ltvD1', label: 'D1 累计LTV', min: 0.01, max: 2, step: 0.01, prefix: '$' },
-      { key: 'ltvD7', label: 'D7 累计LTV', min: 0.05, max: 5, step: 0.01, prefix: '$' },
-      { key: 'ltvD30', label: 'D30 累计LTV', min: 0.2, max: 12, step: 0.01, prefix: '$' },
-    ],
-  },
-  {
     section: '投放预算',
     items: [{ key: 'dailyBudget', label: '日均预算', min: 1000, max: 50000, step: 1000, prefix: '$' }],
   },
